@@ -29,7 +29,7 @@ def fix_path(path):
 if __name__ == "__main__":
     # get arguments from CLI
     parser = argparse.ArgumentParser()
-    parser.add_argument('-recursive', '-R', action='store_true')
+    parser.add_argument('-R', '--recursive', action='store_true')
     parser.add_argument('user')
     parser.add_argument('path')
     args = parser.parse_args()
