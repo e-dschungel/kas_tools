@@ -6,7 +6,6 @@ import logging
 import socket
 import getpass
 
-
 class KAS:
     '''
     class to interact with the KAS API of the german hoster all-inkl.com, see http://kasapi.kasserver.com/dokumentation/phpdoc/ for details
@@ -47,7 +46,68 @@ class KAS:
         self.__auth_token = response
         self.__client = Client(url=self.WSDL_API)
 
+    def convert_str_to_bool(self, input):
+        '''
+        helper function which converts strings to True or False
+        :param input: string to convert
+        :return: True if input=="Y" or "TRUE", False if input=="N" or "FALSE"
+        '''
+        if input=="Y" or input == "TRUE":
+            return True
+        elif input=="N" or input == "FALSE":
+            return False
+        else:
+            raise ValueError(str(input) + " cannot be converted to bool")
+
+    def convert_to_dict(self, data):
+        out = []
+        for listelement in data:
+            for k,v in listelement:
+                outdict = dict()
+                for subk, subv in v:
+                    outdict[str(subk[1][0])] = subv[1][0].encode("unicode-escape")
+                out.append(outdict)
+        return out
+
+    def num(self, s):
+        '''
+        :param s: string to convert
+        :return: Int or Float of s
+        '''
+        if not s.isdigit():
+            raise ValueError(str(s) + " is no number")
+        try:
+            return int(s)
+        except ValueError:
+            return float(s)
+
+
+
+    def fix_types(self, data):
+        '''
+        converts types in dict data to bool, Int or Float as appropriate
+        :param data: dict with value
+        :return:
+        '''
+        for idx, item in enumerate(data):
+            for key, value in item.iteritems():
+                if value.isdigit():
+                    item[key] = self.num(value)
+                try:
+                    string = self.convert_str_to_bool(value)
+                    item[key] = string
+                except:
+                    ValueError
+                    pass
+                data[idx] = item
+        return data
+
+
     def get_accounts(self):
+        '''
+        gets account data
+        :return: dict with account data
+        '''
         request = {
             'KasUser': self.__user,
             'KasAuthType': 'session',
@@ -57,9 +117,16 @@ class KAS:
         }
 
         response = self.__client.service.KasApi(Params=json.dumps(request))
-        print (response)
+        return self.fix_types(self.convert_to_dict(response.item[1].value.item[2].value))
 
     def update_chown(self, user, path, recursive=False):
+        '''
+        change owner of path to user
+        :param user: new owner
+        :param path: path to change
+        :param recursive: change recursive?
+        :return:
+        '''
         request = {
             'KasUser': self.__user,
             'KasAuthType': 'session',
@@ -106,3 +173,4 @@ class KAS:
             return "Y"
         else:
             return "N"
+
