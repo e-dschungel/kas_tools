@@ -60,13 +60,28 @@ class KAS:
             raise ValueError(str(input) + " cannot be converted to bool")
 
     def convert_to_dict(self, data):
-        out = []
-        for listelement in data:
-            for k,v in listelement:
-                outdict = dict()
-                for subk, subv in v:
-                    outdict[str(subk[1][0])] = subv[1][0].encode("unicode-escape")
-                out.append(outdict)
+        out = dict()
+        if isinstance(data, list):
+            out = dict()
+            for listelement in data:
+                out.update(self.convert_to_dict(listelement))
+        elif data.__class__.__name__ == "item":
+            if hasattr(data, "value"):
+                out = dict()
+                #print data.key
+                key = data.key
+                if isinstance(key, list) and all(isinstance(element, basestring) for element in key):
+                    key = "".join(key)
+                    value = "".join(data.value).encode("unicode-escape")
+                    out[key] = self.fix_type(value)
+                elif isinstance(key, basestring):
+                    out[data.key] = self.fix_type(data.value.encode("unicode-escape"))
+                else:
+                    raise ValueError("Invalid type")
+            else:
+                return self.convert_to_dict(data.item)
+        else:
+            raise ValueError("Invalid type")
         return out
 
     def num(self, s):
@@ -82,25 +97,20 @@ class KAS:
             return float(s)
 
 
-
-    def fix_types(self, data):
+    def fix_type(self, value):
         '''
-        converts types in dict data to bool, Int or Float as appropriate
-        :param data: dict with value
-        :return:
+        converts types given as string to bool, Int or Float as appropriate
+        :param data: string with value
+        :return: value converted to bool, Int or Float (if appropiate), unchanged value otherwise
         '''
-        for idx, item in enumerate(data):
-            for key, value in item.iteritems():
-                if value.isdigit():
-                    item[key] = self.num(value)
-                try:
-                    string = self.convert_str_to_bool(value)
-                    item[key] = string
-                except:
-                    ValueError
-                    pass
-                data[idx] = item
-        return data
+        if value.isdigit():
+            return self.num(value)
+        try:
+            return self.convert_str_to_bool(value)
+        except:
+            ValueError
+            pass
+        return value
 
 
     def get_accounts(self):
@@ -117,7 +127,24 @@ class KAS:
         }
 
         response = self.__client.service.KasApi(Params=json.dumps(request))
-        return self.fix_types(self.convert_to_dict(response.item[1].value.item[2].value))
+        return self.convert_to_dict(response.item[1].value.item[2].value)
+
+    def get_accountsettings(self):
+        '''
+        gets account settings
+        :return: dict with account data
+        '''
+        request = {
+            'KasUser': self.__user,
+            'KasAuthType': 'session',
+            'KasAuthData': self.__auth_token,
+            'KasRequestType': "get_accountsettings",
+            'KasRequestParams': "",
+        }
+
+        response = self.__client.service.KasApi(Params=json.dumps(request))
+        return self.convert_to_dict(response.item[1].value.item[2].value[0].value.item)
+
 
     def update_chown(self, user, path, recursive=False):
         '''
