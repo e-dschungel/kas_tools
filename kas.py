@@ -68,14 +68,17 @@ class KAS:
         elif data.__class__.__name__ == "item":
             if hasattr(data, "value"):
                 out = dict()
-                #print data.key
                 key = data.key
-                if isinstance(key, list) and all(isinstance(element, basestring) for element in key):
+                if isinstance(key, list) and all(isinstance(element, basestring) for element in key) and isinstance(data.value, list):
                     key = "".join(key)
                     value = "".join(data.value).encode("unicode-escape")
                     out[key] = self.fix_type(value)
-                elif isinstance(key, basestring):
+                elif isinstance(key, basestring) and isinstance(data.value, basestring):
                     out[data.key] = self.fix_type(data.value.encode("unicode-escape"))
+                elif isinstance(key, basestring) and isinstance(data.value, int):
+                    out[data.key] = data.value
+                elif isinstance(key, basestring) and data.value.__class__.__name__ == "value":
+                    out[key] = self.convert_to_dict(data.value.item)
                 else:
                     raise ValueError("Invalid type")
             else:
@@ -144,6 +147,22 @@ class KAS:
 
         response = self.__client.service.KasApi(Params=json.dumps(request))
         return self.convert_to_dict(response.item[1].value.item[2].value[0].value.item)
+
+    def get_accountressources(self):
+        '''
+        gets account settings
+        :return: dict with account data
+        '''
+        request = {
+            'KasUser': self.__user,
+            'KasAuthType': 'session',
+            'KasAuthData': self.__auth_token,
+            'KasRequestType': "get_accountressources",
+            'KasRequestParams': "",
+        }
+
+        response = self.__client.service.KasApi(Params=json.dumps(request))
+        return self.convert_to_dict(response.item[1].value.item[2].value[0])
 
 
     def update_chown(self, user, path, recursive=False):
