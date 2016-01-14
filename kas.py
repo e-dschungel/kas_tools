@@ -143,6 +143,7 @@ class KAS:
         }
 
         response = self.__client.service.KasApi(Params=json.dumps(request))
+        #TODO handle multiple entries correctly 
         return self.convert_to_dict(response.item[1].value.item[2].value)
 
     def get_accountsettings(self):
@@ -175,6 +176,23 @@ class KAS:
         }
 
         response = self.__client.service.KasApi(Params=json.dumps(request))
+        return self.convert_to_dict(response.item[1].value.item[2].value[0])
+
+    def get_server_information(self):
+        '''
+        gets server information
+        :return: dict with server information
+        '''
+        request = {
+            'KasUser': self.__user,
+            'KasAuthType': 'session',
+            'KasAuthData': self.__auth_token,
+            'KasRequestType': "get_server_information",
+            'KasRequestParams': "",
+        }
+
+        response = self.__client.service.KasApi(Params=json.dumps(request))
+        #TODO handle multiple entries correctly
         return self.convert_to_dict(response.item[1].value.item[2].value[0])
 
 
