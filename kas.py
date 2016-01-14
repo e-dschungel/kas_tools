@@ -87,12 +87,25 @@ class KAS:
             raise ValueError("Invalid type")
         return out
 
+    def isnumeric(self, value):
+        '''
+        checks if string is a number
+        in contrast to python's own isnumeric and isdigit function this also works for negative numbers
+        :param value: string to check
+        :return: True if value is a number, False otherwise
+        '''
+        try:
+            val = float(value)
+            return True
+        except ValueError:
+            return False
+
     def num(self, s):
         '''
         :param s: string to convert
         :return: Int or Float of s
         '''
-        if not s.isdigit():
+        if not self.isnumeric(s):
             raise ValueError(str(s) + " is no number")
         try:
             return int(s)
@@ -106,7 +119,7 @@ class KAS:
         :param data: string with value
         :return: value converted to bool, Int or Float (if appropiate), unchanged value otherwise
         '''
-        if value.isdigit():
+        if self.isnumeric(value):
             return self.num(value)
         try:
             return self.convert_str_to_bool(value)
