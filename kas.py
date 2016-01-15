@@ -104,6 +104,13 @@ class KAS:
             raise ValueError(str(input) + " cannot be converted to bool")
 
     def _convert_to_dict(self, data):
+        '''
+        function to convert SUDS responses to python dicts, this mangles list to one large dict
+        if you need a list of dicts this must be construxted outside of this function
+        :param data: response as given by SUDS
+        :return: dict with the values given in response, the types or the arguments are converted to Int, Float or Bool
+        as appropriate
+        '''
         out = dict()
         if isinstance(data, list):
             out = dict()
