@@ -24,3 +24,4 @@ You will be prompted for your KAS password to perform the change.
 
 ###Flags
 -R: set owner recursively
+--version: show version information

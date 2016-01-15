@@ -27,11 +27,15 @@ def fix_path(path):
     return path.replace(path_to_remove, "")
 
 if __name__ == "__main__":
+    #version of this tool
+    __version__ = "0.1"
+
     # get arguments from CLI
     parser = argparse.ArgumentParser()
     parser.add_argument('-R', '--recursive', action='store_true')
     parser.add_argument('user')
     parser.add_argument('path')
+    parser.add_argument('--version', action='version', version = '%(prog)s ' + __version__)
     args = parser.parse_args()
 
     #make sure path is absolute
