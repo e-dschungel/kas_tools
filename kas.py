@@ -14,10 +14,10 @@ class KAS:
     WSDL_AUTH = "https://kasapi.kasserver.com/soap/wsdl/KasAuth.wsdl"
     WSDL_API = "https://kasapi.kasserver.com/soap/wsdl/KasApi.wsdl"
 
-    __auth_token = ""
-    __user = ""
-    __client = ""
-    __flood_timestamp = dict()
+    _auth_token = ""
+    _user = ""
+    _client = ""
+    _flood_timestamp = dict()
 
     def login(self, user, password, lifetime=5, update_lifetime=True, debug=False):
         '''
@@ -32,44 +32,44 @@ class KAS:
         if debug:
             logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
-        self.__user = user;
+        self._user = user;
 
         client = Client(url=self.WSDL_AUTH)
 
         request = {
-            'KasUser': self.__user,
+            'KasUser': self._user,
             'KasAuthType': 'sha1',
             'KasPassword': hashlib.sha1(password).hexdigest(),
             'SessionLifeTime': lifetime,
-            'SessionUpdateLifeTime': self.convert_bool_to_str(update_lifetime),
+            'SessionUpdateLifeTime': self._convert_bool_to_str(update_lifetime),
         }
 
         response = client.service.KasAuth(Params=json.dumps(request))
-        self.__auth_token = response
-        self.__client = Client(url=self.WSDL_API)
+        self._auth_token = response
+        self._client = Client(url=self.WSDL_API)
 
-    def wait(self, function_name):
+    def _wait(self, function_name):
         '''
         waits blocking until given KAS action can be performed again
         :param function_name: KAS action name
         :return:
         '''
-        if not function_name in self.__flood_timestamp:
+        if not function_name in self._flood_timestamp:
             return
-        if time.time() > self.__flood_timestamp[function_name]:
+        if time.time() > self._flood_timestamp[function_name]:
             return
-        time.sleep(self.__flood_timestamp[function_name] - time.time())
+        time.sleep(self._flood_timestamp[function_name] - time.time())
 
-    def update_flood_protection_time(self, function_name, response):
+    def _update_flood_protection_time(self, function_name, response):
         '''
         updates time after which given KAS action can be performed again to avoid running into flooding protection
         :param function_name:
         :param response: response from KAS server
         :return:
         '''
-        self.__flood_timestamp[function_name] = time.time() + self.get_flood_delay(response)
+        self._flood_timestamp[function_name] = time.time() + self._get_flood_delay(response)
 
-    def get_flood_delay(self, response):
+    def _get_flood_delay(self, response):
         '''
         extracts flood delay from response
         :param response: response from KAS
@@ -77,20 +77,20 @@ class KAS:
         '''
         return response.item[1].value.item[0].value
 
-    def send_request(self, request):
+    def _send_request(self, request):
         '''
         sends request to KAS server, waits if necassary to avoid running in flood protection
         :param request: request to send
         :return: response from KAS server
         '''
         function_name = request['KasRequestType'];
-        self.wait(function_name)
-        response = self.__client.service.KasApi(Params=json.dumps(request))
-        self.update_flood_protection_time(function_name, response)
+        self._wait(function_name)
+        response = self._client.service.KasApi(Params=json.dumps(request))
+        self._update_flood_protection_time(function_name, response)
         return response
 
 
-    def convert_str_to_bool(self, input):
+    def _convert_str_to_bool(self, input):
         '''
         helper function which converts strings to True or False
         :param input: string to convert
@@ -103,12 +103,12 @@ class KAS:
         else:
             raise ValueError(str(input) + " cannot be converted to bool")
 
-    def convert_to_dict(self, data):
+    def _convert_to_dict(self, data):
         out = dict()
         if isinstance(data, list):
             out = dict()
             for listelement in data:
-                out.update(self.convert_to_dict(listelement))
+                out.update(self._convert_to_dict(listelement))
         elif data.__class__.__name__ == "item":
             if hasattr(data, "value"):
                 out = dict()
@@ -116,22 +116,22 @@ class KAS:
                 if isinstance(key, list) and all(isinstance(element, basestring) for element in key) and isinstance(data.value, list):
                     key = "".join(key)
                     value = "".join(data.value).encode("unicode-escape")
-                    out[key] = self.fix_type(value)
+                    out[key] = self._fix_type(value)
                 elif isinstance(key, basestring) and isinstance(data.value, basestring):
-                    out[data.key] = self.fix_type(data.value.encode("unicode-escape"))
+                    out[data.key] = self._fix_type(data.value.encode("unicode-escape"))
                 elif isinstance(key, basestring) and isinstance(data.value, int):
                     out[data.key] = data.value
                 elif isinstance(key, basestring) and data.value.__class__.__name__ == "value":
-                    out[key] = self.convert_to_dict(data.value.item)
+                    out[key] = self._convert_to_dict(data.value.item)
                 else:
                     raise ValueError("Invalid type")
             else:
-                return self.convert_to_dict(data.item)
+                return self._convert_to_dict(data.item)
         else:
             raise ValueError("Invalid type")
         return out
 
-    def isnumeric(self, value):
+    def _isnumeric(self, value):
         '''
         checks if string is a number
         in contrast to python's own isnumeric and isdigit function this also works for negative numbers
@@ -144,12 +144,12 @@ class KAS:
         except ValueError:
             return False
 
-    def num(self, s):
+    def _convert_str_to_numeric(self, s):
         '''
         :param s: string to convert
         :return: Int or Float of s
         '''
-        if not self.isnumeric(s):
+        if not self._isnumeric(s):
             raise ValueError(str(s) + " is no number")
         try:
             return int(s)
@@ -157,16 +157,16 @@ class KAS:
             return float(s)
 
 
-    def fix_type(self, value):
+    def _fix_type(self, value):
         '''
         converts types given as string to bool, Int or Float as appropriate
         :param data: string with value
         :return: value converted to bool, Int or Float (if appropiate), unchanged value otherwise
         '''
-        if self.isnumeric(value):
-            return self.num(value)
+        if self._isnumeric(value):
+            return self._convert_str_to_numeric(value)
         try:
-            return self.convert_str_to_bool(value)
+            return self._convert_str_to_bool(value)
         except:
             ValueError
             pass
@@ -179,17 +179,17 @@ class KAS:
         :return: dict with account data
         '''
         request = {
-            'KasUser': self.__user,
+            'KasUser': self._user,
             'KasAuthType': 'session',
-            'KasAuthData': self.__auth_token,
+            'KasAuthData': self._auth_token,
             'KasRequestType': "get_accounts",
             'KasRequestParams': "",
         }
 
-        response = self.send_request(request)
+        response = self._send_request(request)
         out = []
         for listelement in response.item[1].value.item[2].value:
-            out.append(self.convert_to_dict(listelement))
+            out.append(self._convert_to_dict(listelement))
         return out
 
     def get_accountsettings(self):
@@ -198,15 +198,15 @@ class KAS:
         :return: dict with account data
         '''
         request = {
-            'KasUser': self.__user,
+            'KasUser': self._user,
             'KasAuthType': 'session',
-            'KasAuthData': self.__auth_token,
+            'KasAuthData': self._auth_token,
             'KasRequestType': "get_accountsettings",
             'KasRequestParams': "",
         }
 
-        response = self.send_request(request)
-        return self.convert_to_dict(response.item[1].value.item[2].value[0].value.item)
+        response = self._send_request(request)
+        return self._convert_to_dict(response.item[1].value.item[2].value[0].value.item)
 
     def get_accountressources(self):
         '''
@@ -214,15 +214,15 @@ class KAS:
         :return: dict with account data
         '''
         request = {
-            'KasUser': self.__user,
+            'KasUser': self._user,
             'KasAuthType': 'session',
-            'KasAuthData': self.__auth_token,
+            'KasAuthData': self._auth_token,
             'KasRequestType': "get_accountressources",
             'KasRequestParams': "",
         }
 
-        response = self.send_request(request)
-        return self.convert_to_dict(response.item[1].value.item[2].value[0])
+        response = self._send_request(request)
+        return self._convert_to_dict(response.item[1].value.item[2].value[0])
 
     def get_server_information(self):
         '''
@@ -230,17 +230,17 @@ class KAS:
         :return: dict with server information
         '''
         request = {
-            'KasUser': self.__user,
+            'KasUser': self._user,
             'KasAuthType': 'session',
-            'KasAuthData': self.__auth_token,
+            'KasAuthData': self._auth_token,
             'KasRequestType': "get_server_information",
             'KasRequestParams': "",
         }
 
-        response = self.send_request(request)
+        response = self._send_request(request)
         out = []
         for listelement in response.item[1].value.item[2].value:
-            out.append(self.convert_to_dict(listelement))
+            out.append(self._convert_to_dict(listelement))
         return out
 
 
@@ -253,18 +253,18 @@ class KAS:
         :return:
         '''
         request = {
-            'KasUser': self.__user,
+            'KasUser': self._user,
             'KasAuthType': 'session',
-            'KasAuthData': self.__auth_token,
+            'KasAuthData': self._auth_token,
             'KasRequestType': "update_chown",
             'KasRequestParams': {
                 'chown_path': path,
                 'chown_user': user,
-                'recursive': self.convert_bool_to_str(recursive)
+                'recursive': self._convert_bool_to_str(recursive)
             },
         }
 
-        response = self.send_request(request)
+        response = self._send_request(request)
 
     def is_local(self):
         '''
@@ -288,7 +288,7 @@ class KAS:
         username = username.replace("ssh-", "")
         return username
 
-    def convert_bool_to_str(self, input):
+    def _convert_bool_to_str(self, input):
         '''
         helper function which converts logical values to "Y" or "N"
         :param input: logical value
