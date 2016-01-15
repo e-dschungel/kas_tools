@@ -143,8 +143,10 @@ class KAS:
         }
 
         response = self.__client.service.KasApi(Params=json.dumps(request))
-        #TODO handle multiple entries correctly 
-        return self.convert_to_dict(response.item[1].value.item[2].value)
+        out = []
+        for listelement in response.item[1].value.item[2].value:
+            out.append(self.convert_to_dict(listelement))
+        return out
 
     def get_accountsettings(self):
         '''
@@ -192,8 +194,10 @@ class KAS:
         }
 
         response = self.__client.service.KasApi(Params=json.dumps(request))
-        #TODO handle multiple entries correctly
-        return self.convert_to_dict(response.item[1].value.item[2].value[0])
+        out = []
+        for listelement in response.item[1].value.item[2].value:
+            out.append(self.convert_to_dict(listelement))
+        return out
 
 
     def update_chown(self, user, path, recursive=False):
