@@ -5,6 +5,7 @@ from suds.sudsobject import asdict
 import logging
 import socket
 import getpass
+import time
 
 class KAS:
     '''
@@ -16,6 +17,7 @@ class KAS:
     __auth_token = ""
     __user = ""
     __client = ""
+    __flood_timestamp = dict()
 
     def login(self, user, password, lifetime=5, update_lifetime=True, debug=False):
         '''
@@ -45,6 +47,48 @@ class KAS:
         response = client.service.KasAuth(Params=json.dumps(request))
         self.__auth_token = response
         self.__client = Client(url=self.WSDL_API)
+
+    def wait(self, function_name):
+        '''
+        waits blocking until given KAS action can be performed again
+        :param function_name: KAS action name
+        :return:
+        '''
+        if not function_name in self.__flood_timestamp:
+            return
+        if time.time() > self.__flood_timestamp[function_name]:
+            return
+        time.sleep(self.__flood_timestamp[function_name] - time.time())
+
+    def update_flood_protection_time(self, function_name, response):
+        '''
+        updates time after which given KAS action can be performed again to avoid running into flooding protection
+        :param function_name:
+        :param response: response from KAS server
+        :return:
+        '''
+        self.__flood_timestamp[function_name] = time.time() + self.get_flood_delay(response)
+
+    def get_flood_delay(self, response):
+        '''
+        extracts flood delay from response
+        :param response: response from KAS
+        :return: delay
+        '''
+        return response.item[1].value.item[0].value
+
+    def send_request(self, request):
+        '''
+        sends request to KAS server, waits if necassary to avoid running in flood protection
+        :param request: request to send
+        :return: response from KAS server
+        '''
+        function_name = request['KasRequestType'];
+        self.wait(function_name)
+        response = self.__client.service.KasApi(Params=json.dumps(request))
+        self.update_flood_protection_time(function_name, response)
+        return response
+
 
     def convert_str_to_bool(self, input):
         '''
@@ -142,7 +186,7 @@ class KAS:
             'KasRequestParams': "",
         }
 
-        response = self.__client.service.KasApi(Params=json.dumps(request))
+        response = self.send_request(request)
         out = []
         for listelement in response.item[1].value.item[2].value:
             out.append(self.convert_to_dict(listelement))
@@ -161,7 +205,7 @@ class KAS:
             'KasRequestParams': "",
         }
 
-        response = self.__client.service.KasApi(Params=json.dumps(request))
+        response = self.send_request(request)
         return self.convert_to_dict(response.item[1].value.item[2].value[0].value.item)
 
     def get_accountressources(self):
@@ -177,7 +221,7 @@ class KAS:
             'KasRequestParams': "",
         }
 
-        response = self.__client.service.KasApi(Params=json.dumps(request))
+        response = self.send_request(request)
         return self.convert_to_dict(response.item[1].value.item[2].value[0])
 
     def get_server_information(self):
@@ -193,7 +237,7 @@ class KAS:
             'KasRequestParams': "",
         }
 
-        response = self.__client.service.KasApi(Params=json.dumps(request))
+        response = self.send_request(request)
         out = []
         for listelement in response.item[1].value.item[2].value:
             out.append(self.convert_to_dict(listelement))
@@ -220,7 +264,7 @@ class KAS:
             },
         }
 
-        response = self.__client.service.KasApi(Params=json.dumps(request))
+        response = self.send_request(request)
 
     def is_local(self):
         '''
@@ -254,4 +298,7 @@ class KAS:
             return "Y"
         else:
             return "N"
+
+
+
 
