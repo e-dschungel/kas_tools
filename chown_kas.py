@@ -31,8 +31,8 @@ if __name__ == "__main__":
     __version__ = "0.1"
 
     # get arguments from CLI
-    parser = argparse.ArgumentParser(description='chown tool for hoster all-inkl.com using thier KAS API, homepage: https://github.com/e-dschungel/chown_kas')
-    parser.add_argument('-R', '--recursive', action='store_true')
+    parser = argparse.ArgumentParser(description='chown tool for hoster all-inkl.com using their KAS API, homepage: https://github.com/e-dschungel/chown_kas')
+    parser.add_argument('-R', '--recursive', action='store_true', description='')
     parser.add_argument('user')
     parser.add_argument('path')
     parser.add_argument('--version', action='version', version = '%(prog)s ' + __version__)
