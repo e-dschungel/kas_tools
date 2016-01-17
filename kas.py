@@ -251,10 +251,10 @@ class KAS:
         return out
 
 
-    def update_chown(self, user, path, recursive=False):
+    def update_chown(self, owner, path, recursive=False):
         '''
         change owner of path to user
-        :param user: new owner
+        :param owner: new owner
         :param path: path to change
         :param recursive: change recursive?
         :return:
@@ -266,7 +266,7 @@ class KAS:
             'KasRequestType': "update_chown",
             'KasRequestParams': {
                 'chown_path': path,
-                'chown_user': user,
+                'chown_user': owner,
                 'recursive': self._convert_bool_to_str(recursive)
             },
         }
