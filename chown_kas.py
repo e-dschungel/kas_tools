@@ -56,4 +56,4 @@ if __name__ == "__main__":
     kas.login(kas_user, password)
 
     #execute chown
-    kas.update_chown(args.user, fix_path(args.path), args.recursive)
+    kas.update_chown(args.owner, fix_path(args.path), args.recursive)
