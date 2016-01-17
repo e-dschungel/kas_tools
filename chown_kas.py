@@ -5,11 +5,11 @@ import os
 import getpass
 
 
-def check_user(owner):
+def check_owner(owner):
     '''
     checks if new owner is acceptable: so either phpuser or current KAS user
     :param owner: requested new owner
-    :return: True if username is accepatable, False if not
+    :return: True if new owner name is accepatable, False if not
     '''
     if owner == "":
         return False
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # get arguments from CLI
     parser = argparse.ArgumentParser(description='chown tool for hoster all-inkl.com using their KAS API, homepage: https://github.com/e-dschungel/chown_kas')
     parser.add_argument('-R', '--recursive', action='store_true', help='operate on files and directories recursively')
-    parser.add_argument('user')
+    parser.add_argument('owner')
     parser.add_argument('path')
     parser.add_argument('--version', action='version', version = '%(prog)s ' + __version__)
     args = parser.parse_args()
@@ -43,8 +43,8 @@ if __name__ == "__main__":
 
     #check input
     kas = kas.KAS()
-    if not check_user(args.user):
-        raise IOError("Invalid username!")
+    if not check_owner(args.owner):
+        raise IOError("Invalid owner name!")
     if not os.path.exists(args.path):
         raise IOError("Path does not exist")
 
