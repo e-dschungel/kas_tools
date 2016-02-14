@@ -8,8 +8,9 @@ It can also be used as an example on how to use the KAS API in Python.
 ## Installation
 * Login via SSH
 * Install pip (if not installed already)
+ * symlink `/.local` to `/www/htdocs/USER/.local` to make it survive a de- and reactivation of SSH and the migratation to another server: `ln -s /www/htdocs/USER/.local /.local` (replace USER with your username)
  * `wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --user && rm get-pip.py`
- * add `export PATH=$PATH:/.local/bin` to the file `/www/htdocs/USER/user_bashrc` (replace USER with your username and create if neccessar)y
+ * add `export PATH=$PATH:/.local/bin` to the file `/www/htdocs/USER/user_bashrc` (create file if neccessary)
  * `source /.bashrc`
 * `pip install --user suds-jurko`
 * `git clone https://e-dschungel@github.com/e-dschungel/chown_kas.git`
