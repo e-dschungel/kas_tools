@@ -278,7 +278,6 @@ class KAS:
         checks if we are on a KAS system
         :return: True if yes
         '''
-        return True
         if socket.getfqdn().endswith(".kasserver.com"):
             return True
         else:
