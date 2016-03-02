@@ -31,7 +31,7 @@ if __name__ == "__main__":
     __version__ = "0.1"
 
     # get arguments from CLI
-    parser = argparse.ArgumentParser(description='chown tool for hoster all-inkl.com using their KAS API, homepage: https://github.com/e-dschungel/chown_kas')
+    parser = argparse.ArgumentParser(description='chown tool for hoster all-inkl.com using their KAS API, homepage: https://github.com/e-dschungel/kas_tools')
     parser.add_argument('-R', '--recursive', action='store_true', help='operate on files and directories recursively')
     parser.add_argument('owner')
     parser.add_argument('path')
