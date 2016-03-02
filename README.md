@@ -6,7 +6,9 @@ They are intended to be used on the SSH shell (available for plans >= "Premium")
 They can also be used as an example on how to use the KAS API in Python. 
 
 kas_tools consists of the following tools:
+
 |name|description|
+|---|---|
 |chown_kas|replacement for the missing chown command|
 |getip|script to print the current IP|
 
