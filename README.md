@@ -1,9 +1,14 @@
-# chown_kas
-This is a replacement for chown for the SSH shell of the german hoster [all-inkl.com](http://www.all-inkl.com).
-It is implemented in Python and makes use of the KAS API (see http://kasapi.kasserver.com/dokumentation/phpdoc/index.html).
-It is intended to be used on the SSH shell (available for plans >= "Premium")  of kasserver.com, other usages are not supported.
+# kas_tools
+This repo contains tools for the SSH shell of the german hoster [all-inkl.com](http://www.all-inkl.com).
+They are implemented in Python and make use of the KAS API (see http://kasapi.kasserver.com/dokumentation/phpdoc/index.html).
+They are intended to be used on the SSH shell (available for plans >= "Premium") of kasserver.com, other usages are not supported.
 
-It can also be used as an example on how to use the KAS API in Python. 
+They can also be used as an example on how to use the KAS API in Python. 
+
+kas_tools consists of the following tools:
+|name|description|
+|chown_kas|replacement for the missing chown command|
+|getip|script to print the current IP|
 
 ## Installation
 * Login via SSH
@@ -13,19 +18,25 @@ It can also be used as an example on how to use the KAS API in Python.
  * add `export PATH=$PATH:/.local/bin` to the file `/www/htdocs/USER/user_bashrc` (create file if neccessary)
  * `source /.bashrc`
 * `pip install --user suds-jurko`
-* `git clone https://e-dschungel@github.com/e-dschungel/chown_kas.git`
-* add `alias chown='/www/htdocs/USER/chown_kas/chown_kas.py'` to the file `/www/htdocs/USER/user_bashrc`
+* `git clone https://e-dschungel@github.com/e-dschungel/kas_tools.git`
+* add `alias chown='/PATH/TO/kas_tools/chown_kas.py'` and `alias getip='/PATH/TO/kas_tools/getip.py'`  to the file `/www/htdocs/USER/user_bashrc`
 * `source /.bashrc`
 
-##Usage
+##chown
+###Usage
 Type `chown user path` to change the owner of the path to the given user.
 The user can be `phpuser` or your current KAS user (i.e. `w123456`).
 Other users are not allowed.
 You will be prompted for your KAS password to perform the change.
 
-###Flags
+####Flags
 |flag|description|
 |---|---|
 |`-R`, `--recursive`| change owner recursively|
 |`--version`| show version information|
 |`--help`|show help message|
+
+##getip
+###Usage 
+`getip` simply prints the current IP if executed on a KAS server.
+Otherwise it returns an error.
