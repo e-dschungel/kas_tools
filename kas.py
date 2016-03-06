@@ -6,6 +6,7 @@ import logging
 import socket
 import getpass
 import time
+import os
 
 class KAS:
     '''
@@ -250,12 +251,20 @@ class KAS:
             out.append(self._convert_to_dict(listelement))
         return out
 
+    def fix_chown_path(self, path):
+        '''
+        remove /www/htdocs/w123456 from path as the KAS API for update_chown expects it that way
+        :param path: path to fix
+        :return: fixed path
+        '''
+        path_to_remove = os.path.join("www", "htdocs", self.get_user())
+        return path.replace(path_to_remove, "")
 
     def update_chown(self, owner, path, recursive=False):
         '''
         change owner of path to user
         :param owner: new owner
-        :param path: path to change
+        :param path: path to change, relative to the ftp root, see fix_chown_path
         :param recursive: change recursive?
         :return:
         '''

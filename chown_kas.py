@@ -17,15 +17,6 @@ def check_owner(owner):
         return True
     return False
 
-def fix_path(path):
-    '''
-    remove /www/htdocs/w123456 from path () as the KAS API expects it that way
-    :param path: path to fix
-    :return: fixed path
-    '''
-    path_to_remove = "/www/htdocs/" + kas.get_user()
-    return path.replace(path_to_remove, "")
-
 if __name__ == "__main__":
     #version of this tool
     __version__ = "0.1"
@@ -56,4 +47,4 @@ if __name__ == "__main__":
     kas.login(kas_user, password)
 
     #execute chown
-    kas.update_chown(args.owner, fix_path(args.path), args.recursive)
+    kas.update_chown(args.owner, kas.fix_chown_path(args.path), args.recursive)
