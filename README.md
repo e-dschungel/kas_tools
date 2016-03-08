@@ -7,7 +7,7 @@ They can also be used as an example on how to use the KAS API in Python.
 
 kas_tools consists of the following tools:
 |name|description|
-|chown_kas|replacement for the missing chown command|
+|chown|replacement for the missing chown command|
 |edit|open file in editor and make sure owner and permssions are set so it is editable|
 |getip|script to print the current IP|
 
@@ -20,7 +20,7 @@ kas_tools consists of the following tools:
  * `source /.bashrc`
 * `pip install --user suds-jurko`
 * `git clone https://e-dschungel@github.com/e-dschungel/kas_tools.git`
-* add `alias chown='/PATH/TO/kas_tools/chown_kas.py'`, `alias getip='/PATH/TO/kas_tools/getip.py'` and `alias edit='/PATH/TO/kas_tools/edit.py'`  to the file `/www/htdocs/USER/.user_bashrc`
+* add `'PATH=$PATH:/PATH/TO/kas_tools /PATH/TO/kas_tools'` to `/www/htdocs/USER/.user_bashrc`
 * `source /.bashrc`
 
 ##chown
