@@ -8,6 +8,7 @@ They can also be used as an example on how to use the KAS API in Python.
 kas_tools consists of the following tools:
 |name|description|
 |chown_kas|replacement for the missing chown command|
+|edit|open file in editor and make sure owner and permssions are set so it is editable|
 |getip|script to print the current IP|
 
 ## Installation
@@ -15,11 +16,11 @@ kas_tools consists of the following tools:
 * Install pip (if not installed already)
  * symlink `/.local` to `/www/htdocs/USER/.local` to make it survive a de- and reactivation of SSH and the migratation to another server: `ln -s /www/htdocs/USER/.local /.local` (replace USER with your username)
  * `wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --user && rm get-pip.py`
- * add `export PATH=$PATH:/.local/bin` to the file `/www/htdocs/USER/user_bashrc` (create file if neccessary)
+ * add `export PATH=$PATH:/.local/bin` to the file `/www/htdocs/USER/.user_bashrc` (create file if neccessary)
  * `source /.bashrc`
 * `pip install --user suds-jurko`
 * `git clone https://e-dschungel@github.com/e-dschungel/kas_tools.git`
-* add `alias chown='/PATH/TO/kas_tools/chown_kas.py'` and `alias getip='/PATH/TO/kas_tools/getip.py'`  to the file `/www/htdocs/USER/user_bashrc`
+* add `alias chown='/PATH/TO/kas_tools/chown_kas.py'`, `alias getip='/PATH/TO/kas_tools/getip.py'` and `alias edit='/PATH/TO/kas_tools/edit.py'`  to the file `/www/htdocs/USER/.user_bashrc`
 * `source /.bashrc`
 
 ##chown
@@ -35,6 +36,21 @@ You will be prompted for your KAS password to perform the change.
 |`-R`, `--recursive`| change owner recursively|
 |`--version`| show version information|
 |`--help`|show help message|
+
+##edit
+###Usage
+Type `edit file` to edit the given file in an editor.
+If neccesary the owner and the permissions are change to make the file editable.
+If a change of the owner is neccesary you will be prompted for your KAS password.
+After the editing the owner and the permissions are restored.
+
+####Flags
+|flag|description|
+|---|---|
+|`--version`| show version information|
+|`--help`|show help message|
+|`--editor`|set editor, by default the $EDITOR enviroment variable is used|
+
 
 ##getip
 ###Usage 
