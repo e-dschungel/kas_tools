@@ -15,15 +15,10 @@ kas_tools consists of the following tools:
 
 ## Installation
 * Login via SSH
-* Install pip (if not installed already)
- * symlink `/.local` to `/www/htdocs/USER/.local` to make it survive a de- and reactivation of SSH and the migratation to another server: `ln -s /www/htdocs/USER/.local /.local` (replace USER with your username)
- * `wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --user && rm get-pip.py`
- * add `export PATH=$PATH:/.local/bin` to the file `/www/htdocs/USER/.user_bashrc` (create file if neccessary)
- * `source /.bashrc`
-* `pip install --user suds-jurko`
-* `git clone https://e-dschungel@github.com/e-dschungel/kas_tools.git`
-* add `'PATH=$PATH:/PATH/TO/kas_tools /PATH/TO/kas_tools'` to `/www/htdocs/USER/.user_bashrc`
-* `source /.bashrc`
+* Install SUDS library: `pip2 install --user suds-jurko`
+* Clone repo: `git clone https://e-dschungel@github.com/e-dschungel/kas_tools.git /PATH/TO/kas_tools`
+* Add `'PATH=$PATH:/PATH/TO/kas_tools'` to `/www/htdocs/USER/.user_bashrc`
+* Reload bashrc: `source /.bashrc`
 
 ##chown
 ###Usage
