@@ -25,26 +25,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='chown tool for hoster all-inkl.com using their KAS API, homepage: https://github.com/e-dschungel/kas_tools')
     parser.add_argument('-R', '--recursive', action='store_true', help='operate on files and directories recursively')
     parser.add_argument('owner')
-    parser.add_argument('path')
+    parser.add_argument('path', nargs = '*')
     parser.add_argument('--version', action='version', version = '%(prog)s ' + __version__)
     args = parser.parse_args()
 
     #make sure path is absolute
-    args.path = os.path.abspath(args.path)
+    args.path = [os.path.abspath(path) for path in args.path]
 
     #check input
     kas = kas.KAS()
     if not check_owner(args.owner):
         raise IOError("Invalid owner name!")
-    if not os.path.exists(args.path):
-        raise IOError("Path does not exist")
+    for path in args.path:
+        if not os.path.exists(path):
+            raise IOError("{} does not exist".format(path))
 
     #get KAS user and password
     kas_user = kas.get_user();
-    password = getpass.getpass("KAS password for user " + kas_user + ": ")
+    password = getpass.getpass("KAS password for user {}: ".format(kas_user))
 
     #log into KAS
     kas.login(kas_user, password)
 
     #execute chown
-    kas.update_chown(args.owner, kas.fix_chown_path(args.path), args.recursive)
+    for path in args.path:
+        kas.update_chown(args.owner, kas.fix_chown_path(path), args.recursive)
