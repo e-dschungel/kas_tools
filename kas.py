@@ -8,9 +8,11 @@ import getpass
 import time
 import os
 
+
 class KAS:
     '''
-    class to interact with the KAS API of the german hoster all-inkl.com, see http://kasapi.kasserver.com/dokumentation/phpdoc/ for details
+    class to interact with the KAS API of the german hoster all-inkl.com,
+    see http://kasapi.kasserver.com/dokumentation/phpdoc/ for details
     '''
     WSDL_AUTH = "https://kasapi.kasserver.com/soap/wsdl/KasAuth.wsdl"
     WSDL_API = "https://kasapi.kasserver.com/soap/wsdl/KasApi.wsdl"
@@ -20,7 +22,8 @@ class KAS:
     _client = ""
     _flood_timestamp = dict()
 
-    def login(self, user, password, lifetime=5, update_lifetime=True, debug=False):
+    def login(self, user, password, lifetime=5, update_lifetime=True,
+              debug=False):
         '''
         log into KAS, must be called before any other KAS operation
         :param user: KAS user
@@ -33,7 +36,7 @@ class KAS:
         if debug:
             logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
-        self._user = user;
+        self._user = user
 
         client = Client(url=self.WSDL_AUTH)
 
@@ -42,7 +45,8 @@ class KAS:
             'KasAuthType': 'sha1',
             'KasPassword': hashlib.sha1(password).hexdigest(),
             'SessionLifeTime': lifetime,
-            'SessionUpdateLifeTime': self._convert_bool_to_str(update_lifetime),
+            'SessionUpdateLifeTime':
+            self._convert_bool_to_str(update_lifetime),
         }
 
         response = client.service.KasAuth(Params=json.dumps(request))
@@ -63,7 +67,8 @@ class KAS:
 
     def _update_flood_protection_time(self, function_name, response):
         '''
-        updates time after which given KAS action can be performed again to avoid running into flooding protection
+        updates time after which given KAS action can be performed again to
+        avoid running into flooding protection
         :param function_name:
         :param response: response from KAS server
         :return:
@@ -84,12 +89,11 @@ class KAS:
         :param request: request to send
         :return: response from KAS server
         '''
-        function_name = request['KasRequestType'];
+        function_name = request['KasRequestType']
         self._wait(function_name)
         response = self._client.service.KasApi(Params=json.dumps(request))
         self._update_flood_protection_time(function_name, response)
         return response
-
 
     def _convert_str_to_bool(self, input):
         '''
@@ -97,9 +101,9 @@ class KAS:
         :param input: string to convert
         :return: True if input=="Y" or "TRUE", False if input=="N" or "FALSE"
         '''
-        if input=="Y" or input == "TRUE":
+        if input == "Y" or input == "TRUE":
             return True
-        elif input=="N" or input == "FALSE":
+        elif input == "N" or input == "FALSE":
             return False
         else:
             raise ValueError(str(input) + " cannot be converted to bool")
@@ -107,10 +111,10 @@ class KAS:
     def _convert_to_dict(self, data):
         '''
         function to convert SUDS responses to python dicts, this mangles list to one large dict
-        if you need a list of dicts this must be construxted outside of this function
+        if you need a list of dicts this must be constructed outside of this function
         :param data: response as given by SUDS
-        :return: dict with the values given in response, the types or the arguments are converted to Int, Float or Bool
-        as appropriate
+        :return: dict with the values given in response, the types or the
+        arguments are converted to Int, Float or Bool as appropriate
         '''
         out = dict()
         if isinstance(data, list):
@@ -121,7 +125,8 @@ class KAS:
             if hasattr(data, "value"):
                 out = dict()
                 key = data.key
-                if isinstance(key, list) and all(isinstance(element, basestring) for element in key) and isinstance(data.value, list):
+                if (isinstance(key, list) and all(isinstance(element, basestring) for element in key)
+                        and isinstance(data.value, list)):
                     key = "".join(key)
                     value = "".join(data.value).encode("unicode-escape")
                     out[key] = self._fix_type(value)
@@ -142,7 +147,8 @@ class KAS:
     def _isnumeric(self, value):
         '''
         checks if string is a number
-        in contrast to python's own isnumeric and isdigit function this also works for negative numbers
+        in contrast to python's own isnumeric and isdigit function this also
+        works for negative numbers
         :param value: string to check
         :return: True if value is a number, False otherwise
         '''
@@ -164,12 +170,12 @@ class KAS:
         except ValueError:
             return float(s)
 
-
     def _fix_type(self, value):
         '''
         converts types given as string to bool, Int or Float as appropriate
         :param data: string with value
-        :return: value converted to bool, Int or Float (if appropiate), unchanged value otherwise
+        :return: value converted to bool, Int or Float (if appropiate),
+        unchanged value otherwise
         '''
         if self._isnumeric(value):
             return self._convert_str_to_numeric(value)
@@ -179,7 +185,6 @@ class KAS:
             ValueError
             pass
         return value
-
 
     def get_accounts(self):
         '''
@@ -253,7 +258,8 @@ class KAS:
 
     def fix_chown_path(self, path):
         '''
-        remove /www/htdocs/w123456 from path as the KAS API for update_chown expects it that way
+        remove /www/htdocs/w123456 from path as the KAS API for update_chown
+        expects it that way
         :param path: path to fix
         :return: fixed path
         '''
@@ -264,7 +270,8 @@ class KAS:
         '''
         change owner of path to user
         :param owner: new owner
-        :param path: path to change, relative to the ftp root, see fix_chown_path
+        :param path: path to change, relative to the ftp root,
+        see fix_chown_path
         :param recursive: change recursive?
         :return:
         '''
@@ -313,7 +320,3 @@ class KAS:
             return "Y"
         else:
             return "N"
-
-
-
-

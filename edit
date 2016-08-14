@@ -25,10 +25,11 @@ def get_owner(file):
     if user == "www-data":
         user = "phpuser"
     elif user.startswith("ssh-"):
-      user = user.replace("ssh-", "")
+        user = user.replace("ssh-", "")
     else:
         raise IOError("Unknown type of owner: " . user)
     return user
+
 
 def get_default_editor():
     '''
@@ -37,8 +38,9 @@ def get_default_editor():
     '''
     editor = os.getenv('EDITOR')
     if not editor:
-        editor = "vi" #vi should be available on all POSIX systems
+        editor = "vi"  # vi should be available on all POSIX systems
     return editor
+
 
 def edit_file(file):
     '''
@@ -62,10 +64,14 @@ if __name__ == "__main__":
     max_wait_time = 30
 
     # get arguments from CLI
-    parser = argparse.ArgumentParser(description='tool to chown a file to make it editable if necessary, edit it with your favourite editor and chown it back, homepage: https://github.com/e-dschungel/kas_tools')
+    parser = argparse.ArgumentParser(description='tool to chown a file to make it editable if necessary, '
+                                                 'edit it with your favourite editor and chown it back, '
+                                                 'homepage: https://github.com/e-dschungel/kas_tools')
     parser.add_argument('file')
-    parser.add_argument('--editor', default = get_default_editor(), help="editor to call")
-    parser.add_argument('--version', action='version', version = '%(prog)s ' + __version__)
+    parser.add_argument('--editor', default=get_default_editor(),
+                        help="editor to call")
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s ' + __version__)
     args = parser.parse_args()
 
     #make sure path is absolute
@@ -87,14 +93,14 @@ if __name__ == "__main__":
     is_readwriteable_by_initial_owner = os.access(args.file, os.R_OK | os.W_OK)
 
     if is_readwriteable_by_initial_owner or (not is_readwriteable_by_initial_owner and initial_owner == kas_user):
-        #file is editable or permssion can be changed to make it editable
+        # file is editable or permssion can be changed to make it editable
         edit_file(args.file)
-    else: #chmod(w123456) is required to make file editable
+    else:  # chmod(w123456) is required to make file editable
         print("{} needs an owner change".format(args.file))
-        #get KAS password
+        # get KAS password
         password = getpass.getpass("KAS password for user " + kas_user + ": ")
         try:
-            #change owner
+            # change owner
             kas.login(kas_user, password)
             kas.update_chown(kas_user, kas.fix_chown_path(args.file))
             print("Waiting for owner to change...")
@@ -117,10 +123,3 @@ if __name__ == "__main__":
             if get_owner(args.file) != initial_owner:
                 kas.login(kas_user, password)
                 kas.update_chown(initial_owner, kas.fix_chown_path(args.file))
-
-
-
-
-
-
-
