@@ -39,6 +39,14 @@ You will be prompted for your KAS password to perform the change.
 |`--version`| show version information|
 |`--help`|show help message|
 
+###Changelog
+####0.1
+- first public version
+
+####0.2
+- multiple path can be chowned at once
+- improved help message
+
 ##edit
 ###Usage
 Type `edit file` to edit the given file in an editor.
