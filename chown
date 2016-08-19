@@ -25,9 +25,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='chown tool for hoster all-inkl.com using their KAS API, '
                                                  'homepage: https://github.com/e-dschungel/kas_tools')
     parser.add_argument('-R', '--recursive', action='store_true',
-                        help='operate on files and directories recursively')
-    parser.add_argument('owner')
-    parser.add_argument('path', nargs='*')
+                        help='operate recursively on files and directories')
+    parser.add_argument('owner', help='can be `phpuser` or your current KAS user (i.e. `w123456`)')
+    parser.add_argument('path', nargs='*', help = 'path to be chowned')
     parser.add_argument('--version', action='version',
                         version='%(prog)s ' + __version__)
     args = parser.parse_args()
