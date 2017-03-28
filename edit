@@ -44,7 +44,7 @@ def get_default_editor():
 
 def edit_file(file):
     '''
-    edit given file, permmsions are set to file can be edited
+    edit given file, permissions are set so file can be edited
     :param file:
     :return: nothing
     '''
