@@ -20,36 +20,36 @@ kas_tools consists of the following tools:
 * Add `'PATH=$PATH:/PATH/TO/kas_tools'` to `/www/htdocs/USER/.user_bashrc`
 * Reload bashrc: `source /.bashrc`
 
-##chown
-###Usage
+## chown
+### Usage
 Type `chown user path` to change the owner of the path to the given user.
 The user can be `phpuser` or your current KAS user (i.e. `w123456`).
 Other users are not allowed.
 You will be prompted for your KAS password to perform the change.
 
-####Flags
+#### Flags
 |flag|description|
 |---|---|
 |`-R`, `--recursive`| change owner recursively|
 |`--version`| show version information|
 |`--help`|show help message|
 
-###Changelog
-####0.1
+### Changelog
+#### 0.1
 - first public version
 
-####0.2
+#### 0.2
 - multiple path can be chowned at once
 - improved help message
 
-##edit
-###Usage
+## edit
+### Usage
 Type `edit file` to edit the given file in an editor.
 If neccesary the owner and the permissions are change to make the file editable.
 If a change of the owner is neccesary you will be prompted for your KAS password.
 After the editing the owner and the permissions are restored.
 
-####Flags
+### Flags
 |flag|description|
 |---|---|
 |`--version`| show version information|
@@ -57,7 +57,7 @@ After the editing the owner and the permissions are restored.
 |`--editor`|set editor, by default the $EDITOR enviroment variable is used|
 
 
-##getip
-###Usage 
+## getip
+### Usage 
 `getip` simply prints the current IP if executed on a KAS server.
 Otherwise it returns an error.
