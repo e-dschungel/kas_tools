@@ -1,4 +1,8 @@
 # kas_tools
+**WARNING**
+This project is no longer actively maintained as the main use case (changing the owner due to different FTP and PHP user) is no longer required. FTP and PHP use the same user now. 
+However, the repo stays active and accepts PRs.  
+
 This repo contains tools for the SSH shell of the german hoster [all-inkl.com](http://www.all-inkl.com).
 They are implemented in Python and make use of the KAS API (see http://kasapi.kasserver.com/dokumentation/phpdoc/index.html).
 They are intended to be used on the SSH shell (available for plans >= "Premium") of kasserver.com, other usages are not supported.
